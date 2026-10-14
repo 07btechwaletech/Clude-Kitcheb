@@ -10,8 +10,11 @@
     "preview": "astro preview",
     "check": "astro check"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
-    "@astrojs/react": "^4.4.3",
+    "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.6.0",
     "@nanostores/react": "^1.0.0",
     "@tailwindcss/vite": "^4.3.3",
@@ -28,6 +31,6 @@
   "devDependencies": {
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.6",
-    "typescript": "^5.9.4"
+    "typescript": "^7.0.2"
   }
 }
