@@ -1,0 +1,105 @@
+---
+import { NAV, SITE, telHref } from '../lib/site';
+import DocketTrigger from './DocketTrigger';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header
+  class="sticky top-0 z-[100] border-b border-hair bg-ink/85 backdrop-blur-[14px] backdrop-saturate-150"
+>
+  <div class="wrap flex min-h-[72px] items-center justify-between gap-5">
+    <a href="/" class="flex flex-none items-center gap-3 no-underline" aria-label={`${SITE.name} — home`}>
+      <svg class="h-9 w-9 flex-none" viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" rx="5" fill="var(--color-turmeric)"></rect>
+        <path
+          d="M11 13.5h18M20 13.5V29M14.5 29h11"
+          stroke="var(--color-ink)"
+          stroke-width="2.4"
+          stroke-linecap="round"></path>
+        <circle cx="20" cy="9.5" r="2.1" fill="var(--color-ink)"></circle>
+      </svg>
+      <span class="leading-none">
+        <span class="display block text-[1.12rem]" style="font-variation-settings:'SOFT' 40,'WONK' 1,'opsz' 24">
+          {SITE.name}
+        </span>
+        <span class="mt-1 block font-mono text-[0.54rem] tracking-[0.3em] text-steel-dim uppercase">
+          Cloud Kitchen · Gurgaon
+        </span>
+      </span>
+    </a>
+
+    <nav
+      id="nav"
+      aria-label="Main"
+      data-open="false"
+      class="max-lg:fixed max-lg:inset-x-0 max-lg:top-[72px] max-lg:z-[99] max-lg:flex-col max-lg:items-stretch max-lg:gap-0 max-lg:border-b max-lg:border-hair max-lg:bg-ink max-lg:px-gut max-lg:pt-4 max-lg:pb-8 max-lg:[clip-path:inset(0_0_100%_0)] max-lg:transition-[clip-path] max-lg:duration-[400ms] max-lg:ease-[cubic-bezier(.22,1,.36,1)] max-lg:data-[open=true]:[clip-path:inset(0_0_0_0)] flex items-center gap-4 xl:gap-8"
+    >
+      {
+        NAV.map((item) => (
+          <a
+            href={item.href}
+            aria-current={isCurrent(item.href) ? 'page' : undefined}
+            class="py-1.5 text-[0.9rem] text-bone/75 no-underline transition-colors hover:text-bone aria-[current=page]:text-bone aria-[current=page]:shadow-[inset_0_-1px_0_var(--color-turmeric)] max-lg:border-b max-lg:border-hair max-lg:py-3.5 max-lg:text-[1.05rem] max-lg:aria-[current=page]:text-turmeric max-lg:aria-[current=page]:shadow-none"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a
+        href={telHref}
+        class="hidden py-1.5 font-mono text-[0.72rem] tracking-[0.12em] text-turmeric no-underline uppercase max-lg:block"
+      >
+        Call {SITE.phone}
+      </a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <DocketTrigger client:idle />
+      <button
+        id="burger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="nav"
+        aria-label="Open menu"
+        class="grid h-11 w-11 place-items-center rounded lg:hidden"
+      >
+        <span class="relative block h-[1.5px] w-5 bg-bone before:absolute before:block before:h-[1.5px] before:w-5 before:-translate-y-[6px] before:bg-bone before:transition-transform after:absolute after:block after:h-[1.5px] after:w-5 after:translate-y-[6px] after:bg-bone after:transition-transform"
+        ></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const burger = document.getElementById('burger');
+  const nav = document.getElementById('nav');
+
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    nav?.setAttribute('data-open', String(!open));
+  });
+
+  // Close the mobile menu after following a link within the page.
+  nav?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).tagName !== 'A') return;
+    burger?.setAttribute('aria-expanded', 'false');
+    nav.setAttribute('data-open', 'false');
+  });
+</script>
+
+<style>
+  /* Burger → cross, without a second icon */
+  #burger[aria-expanded='true'] span {
+    background: transparent;
+  }
+  #burger[aria-expanded='true'] span::before {
+    transform: translateY(0) rotate(45deg);
+  }
+  #burger[aria-expanded='true'] span::after {
+    transform: translateY(0) rotate(-45deg);
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import Gallery from '../components/Gallery';
+import WhatsAppIcon from '../components/WhatsAppIcon';
+import { GALLERY, pic } from '../lib/images';
+import { SITE } from '../lib/site';
+import { hello } from '../lib/docket';
+
+const frames = GALLERY.map((g) => ({ ...pic(g.file), caption: g.caption }));
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ImageGallery',
+    name: `${SITE.name} kitchen gallery`,
+    url: `${SITE.url}/gallery`,
+    image: frames.map((f) => new URL(f.src, SITE.url).href),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Gallery', item: `${SITE.url}/gallery` },
+    ],
+  },
+];
+---
+
+<Base
+  title="Gallery"
+  description={`Photographs from the ${SITE.name} kitchen in Gurgaon — biryani, tandoor, curries and street food, shot on the pass.`}
+  schema={schema}
+>
+  <section class="border-b border-hair pt-[clamp(3rem,7vw,5.5rem)] pb-[clamp(2.5rem,5vw,4rem)]">
+    <div class="wrap">
+      <nav
+        aria-label="Breadcrumb"
+        class="mb-6 font-mono text-[0.64rem] tracking-[0.16em] text-steel-dim uppercase"
+      >
+        <a href="/" class="no-underline hover:text-turmeric">Home</a> / Gallery
+      </nav>
+      <h1 class="text-h2">Twelve frames from the pass</h1>
+      <p class="lede mt-5">
+        Every photograph here is a dish we actually send out, shot in the kitchen on the day it was
+        cooked. Tap any frame to see it larger.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-sec">
+    <div class="wrap">
+      <Gallery frames={frames} client:visible />
+    </div>
+  </section>
+
+  <section class="bg-ink-raised py-sec">
+    <div class="wrap grid items-center gap-8 lg:grid-cols-[1fr_auto] lg:gap-12">
+      <div class="reveal">
+        <h2 class="max-w-[20ch] text-h2">Seen something you want?</h2>
+        <p class="mt-4 max-w-[46ch] text-bone/80">
+          Everything in these photographs is on the menu today.
+        </p>
+      </div>
+      <div class="reveal flex flex-wrap gap-3">
+        <a class="btn" href="/menu">See the menu</a>
+        <a class="btn btn-wa" href={hello} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon className="h-[1.1em] w-[1.1em]" />
+          Order on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

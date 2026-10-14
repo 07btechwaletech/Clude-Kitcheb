@@ -1,0 +1,195 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import WhatsAppIcon from '../components/WhatsAppIcon';
+import { SITE, telHref, fullAddress } from '../lib/site';
+import { hello } from '../lib/docket';
+
+import storyLadle from '../assets/img/story-ladle.webp';
+import storyPass from '../assets/img/story-pass.webp';
+
+const principles = [
+  {
+    h: 'Ground fresh, every morning',
+    p: 'Garam masala, kadai masala and the biryani blend are pounded in-house each day. Pre-ground powder loses its oils in a week — you can taste the difference in a gravy that only has six ingredients.',
+  },
+  {
+    h: 'Tested after the ride',
+    p: 'Every dish is cooked, boxed, left for twenty minutes and then eaten before it goes on the menu. If it splits, sweats or goes soft in transit, we fix it or we drop it.',
+  },
+  {
+    h: 'One rider, one stop',
+    p: 'We do not batch your order with three others. The bag leaves with your food in it and goes to you. It costs us more and it is the whole reason the food arrives hot.',
+  },
+  {
+    h: 'Prices that already include everything',
+    p: 'The number on the menu is the number you pay. No packaging fee, no small-order fee, no surge at 8pm on a Friday.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: `About ${SITE.name}`,
+    url: `${SITE.url}/about`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'About', item: `${SITE.url}/about` },
+    ],
+  },
+];
+---
+
+<Base
+  title="About the kitchen"
+  description={`How ${SITE.name} runs: one delivery-only kitchen in Sector 29 Gurgaon, spices ground every morning, every dish tested after a twenty-minute ride, one rider per order.`}
+  schema={schema}
+>
+  <section class="border-b border-hair pt-[clamp(3rem,7vw,5.5rem)] pb-[clamp(2.5rem,5vw,4rem)]">
+    <div class="wrap">
+      <nav
+        aria-label="Breadcrumb"
+        class="mb-6 font-mono text-[0.64rem] tracking-[0.16em] text-steel-dim uppercase"
+      >
+        <a href="/" class="no-underline hover:text-turmeric">Home</a> / About
+      </nav>
+      <h1 class="max-w-[16ch] text-h2">We gave away the dining room on purpose</h1>
+      <p class="lede mt-5">
+        {SITE.name} is a delivery-only kitchen in Sector 29, Gurgaon. There is no counter to walk up to and
+        no table to book — just a pass, a tandoor, four burners and a door the riders come through.
+      </p>
+    </div>
+  </section>
+
+  <!-- The story ----------------------------------------------------------- -->
+  <section class="py-sec">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-2 lg:gap-18">
+      <div class="reveal">
+        <p class="eyebrow mb-5">How it started</p>
+        <h2 class="mb-6 text-h2">A kitchen, two cooks, one number</h2>
+        <p class="mb-4 text-bone/80">
+          We started in 2021 cooking dal makhani and biryani for about thirty families on a single
+          WhatsApp number. The number is still the same. The kitchen is bigger, the menu is longer,
+          and the dal still goes on the flame at six in the morning.
+        </p>
+        <p class="mb-4 text-bone/80">
+          Running without a dining room means the money goes somewhere more useful. No rent on a
+          room full of chairs, no waiters standing idle at four in the afternoon. What is left pays
+          for better chicken, real khoya, and a cook whose only job is the tandoor.
+        </p>
+        <p class="text-bone/80">
+          It also keeps us honest. Nobody is here for the ambience or the lighting. If the food is
+          not right when the box is opened, there is nothing else to blame.
+        </p>
+      </div>
+      <div class="reveal">
+        <Image
+          src={storyLadle}
+          alt="Butter chicken being finished with cream before it is boxed"
+          widths={[500, 800, 1200]}
+          sizes="(min-width: 1024px) 46vw, 92vw"
+          loading="eager"
+          class="aspect-4/3 w-full rounded object-cover"
+          data-drift
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Principles ----------------------------------------------------------- -->
+  <section class="bg-ink-sunk py-sec">
+    <div class="wrap">
+      <header class="reveal mb-12 grid items-end gap-6 lg:grid-cols-[1.35fr_1fr] lg:gap-12">
+        <div>
+          <p class="eyebrow mb-5">How we cook</p>
+          <h2 class="text-h2">Four rules we do not bend</h2>
+        </div>
+        <p class="max-w-[42ch] text-bone/76">
+          None of this is unusual in a good kitchen. It is unusual in a kitchen that only delivers —
+          which is exactly why we wrote it down.
+        </p>
+      </header>
+
+      <ul class="reveal grid list-none gap-px bg-hair pl-0 sm:grid-cols-2">
+        {
+          principles.map((p) => (
+            <li class="bg-ink-sunk p-7 lg:p-9">
+              <h3 class="mb-3 text-[1.25rem]">{p.h}</h3>
+              <p class="max-w-[48ch] text-[0.95rem] text-bone/76">{p.p}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Hygiene & trust ------------------------------------------------------ -->
+  <section class="py-sec">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-18">
+      <div class="reveal order-last lg:order-first">
+        <Image
+          src={storyPass}
+          alt="Finished dishes lined up on the pass, ready to be boxed"
+          widths={[500, 800, 1200]}
+          sizes="(min-width: 1024px) 50vw, 92vw"
+          loading="lazy"
+          class="aspect-4/3 w-full rounded object-cover"
+          data-drift
+        />
+      </div>
+      <div class="reveal">
+        <p class="eyebrow mb-5">The boring, important part</p>
+        <h2 class="mb-6 text-h2">Licensed, sealed, traceable</h2>
+        <p class="mb-4 text-bone/80">
+          The kitchen holds FSSAI licence {SITE.fssai} and is inspected like any restaurant kitchen.
+          Every order leaves in tamper-evident packaging with the ticket number printed on it, so if
+          something is wrong we can find out exactly who cooked it and when.
+        </p>
+        <p class="text-bone/80">
+          Veg and non-veg are prepped on separate boards, in separate pans, by separate hands. If
+          you are ordering pure veg for a function, tell us — we will send it from the veg side of
+          the kitchen only.
+        </p>
+
+        <dl class="mt-10 grid grid-cols-2 gap-px bg-hair">
+          <div class="bg-ink p-5">
+            <dt class="mb-2 font-mono text-[0.62rem] tracking-[0.18em] text-steel-dim uppercase">
+              FSSAI licence
+            </dt>
+            <dd class="font-mono text-[0.95rem]">{SITE.fssai}</dd>
+          </div>
+          <div class="bg-ink p-5">
+            <dt class="mb-2 font-mono text-[0.62rem] tracking-[0.18em] text-steel-dim uppercase">
+              Kitchen address
+            </dt>
+            <dd class="text-[0.95rem] leading-relaxed">{fullAddress}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-ink-raised py-sec">
+    <div class="wrap grid items-center gap-8 lg:grid-cols-[1fr_auto] lg:gap-12">
+      <div class="reveal">
+        <h2 class="max-w-[20ch] text-h2">Come hungry. Stay wherever you are.</h2>
+        <p class="mt-4 max-w-[46ch] text-bone/80">
+          Open {SITE.hours.days.toLowerCase()} from {SITE.hours.open} to {SITE.hours.close}.
+        </p>
+      </div>
+      <div class="reveal flex flex-wrap gap-3">
+        <a class="btn" href="/menu">See the menu</a>
+        <a class="btn btn-wa" href={hello} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon className="h-[1.1em] w-[1.1em]" />
+          Order on WhatsApp
+        </a>
+        <a class="btn btn-ghost" href={telHref}>Call</a>
+      </div>
+    </div>
+  </section>
+</Base>

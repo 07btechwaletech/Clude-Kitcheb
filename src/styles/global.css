@@ -1,0 +1,389 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Tiffin & Tandoor — design system
+   A cloud kitchen has no dining room, so the site borrows the kitchen's own
+   materials instead of a restaurant's: warm ink (the room at night), brushed
+   steel (the pass), turmeric (the spice), and paper (the order ticket).
+   ========================================================================== */
+
+@theme {
+  /* Surfaces */
+  --color-ink: #141010;
+  --color-ink-raised: #1c1716;
+  --color-ink-sunk: #0e0b0b;
+  --color-hair: #2b2422;
+
+  /* Materials */
+  --color-steel: #9a978e;
+  --color-steel-dim: #6e6a63;
+  --color-turmeric: #e6a42b;
+  --color-turmeric-deep: #c98a17;
+  --color-chili: #c0401c;
+  --color-paper: #f3ebdc;
+  --color-paper-ink: #231c16;
+  --color-bone: #fbf6ee;
+  --color-veg: #4c9a48;
+  --color-nonveg: #b83a2a;
+
+  /* Type — Fraunces carries the voice, Instrument Sans reads, Plex Mono counts */
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --text-hero: clamp(2.5rem, 1rem + 4.6vw, 5.25rem);
+  --text-h2: clamp(2rem, 1.2rem + 3.2vw, 3.75rem);
+  --text-h3: clamp(1.35rem, 1.05rem + 1.1vw, 1.9rem);
+  --text-lede: clamp(1.03rem, 0.96rem + 0.4vw, 1.2rem);
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --spacing-gut: clamp(1.15rem, 4vw, 3rem);
+  /* Beyond this the layout stops growing and centres as one block */
+  --frame: 2000px;
+  --spacing-sec: clamp(5rem, 10vw, 9.75rem);
+}
+
+/* --- Base ---------------------------------------------------------------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  /* Lenis drives scrolling; native smooth would fight it */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  /* Header, content and footer share one frame so every left edge lines up,
+     however wide the monitor is. */
+  body > header,
+  body > main,
+  body > footer {
+    max-width: var(--frame);
+    margin-inline: auto;
+  }
+
+  body {
+    padding-bottom: var(--orderbar, 0px);
+    transition: padding-bottom 0.35s var(--ease-out-expo);
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Film grain over the whole shell — the one texture that makes it feel made */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 96;
+    font-weight: 450;
+    line-height: 1.03;
+    letter-spacing: -0.028em;
+    text-wrap: balance;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-turmeric);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-turmeric);
+    color: var(--color-ink);
+  }
+
+  details > summary {
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+/* --- Components ---------------------------------------------------------- */
+@layer components {
+  .wrap {
+    width: min(100% - var(--spacing-gut) * 2, 1240px);
+    margin-inline: auto;
+  }
+
+  /* Hero: the copy stays on the page grid, the photograph runs off the edge.
+     One full-bleed image does more for the feel of the page than any amount
+     of decoration, and it costs nothing. */
+  .hero {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+    padding-top: clamp(2.5rem, 6vw, 5rem);
+  }
+  .hero > * {
+    width: min(100% - var(--spacing-gut) * 2, 1240px);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      /* The copy column is only as wide as the copy, so the photograph sits
+         beside the text instead of across a gulf of empty background. */
+      --hero-pad: max(var(--spacing-gut), calc((min(100vw, var(--frame)) - 1240px) / 2));
+      grid-template-columns: minmax(0, calc(var(--hero-pad) + min(34rem, 42vw))) minmax(0, 1fr);
+      align-items: stretch;
+      min-height: min(86vh, 50rem);
+      gap: clamp(2rem, 3.5vw, 4rem);
+      padding-block: 0;
+    }
+    /* Drop the page gutter here — the copy sets its own, the photo bleeds */
+    .hero > * {
+      width: auto;
+      margin-inline: 0;
+    }
+    .hero__copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: var(--hero-pad);
+      padding-block: clamp(3rem, 5vw, 5rem);
+    }
+    .hero__media {
+      display: flex;
+    }
+    .hero__media > .hero__slides {
+      flex: 1;
+    }
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 96;
+    font-weight: 450;
+    letter-spacing: -0.022em;
+    line-height: 1.03;
+  }
+
+  /* The soft italic used for the one emphasised word per headline */
+  .wonk {
+    font-style: italic;
+    font-variation-settings: 'SOFT' 80, 'WONK' 1, 'opsz' 144;
+    letter-spacing: -0.03em;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+  }
+  .eyebrow::before {
+    content: '';
+    width: clamp(1.5rem, 4vw, 2.75rem);
+    height: 1px;
+    background: var(--color-turmeric);
+    flex: none;
+  }
+
+  .lede {
+    font-size: var(--text-lede);
+    line-height: 1.6;
+    color: color-mix(in srgb, var(--color-bone) 82%, transparent);
+    max-width: 54ch;
+    text-wrap: pretty;
+  }
+
+  /* A menu line reads like a ticket line: name, leader dots, price */
+  .leader {
+    flex: 1 1 auto;
+    border-bottom: 1px dotted currentColor;
+    opacity: 0.32;
+    translate: 0 -0.22em;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.05rem 1.9rem;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: var(--color-turmeric);
+    color: var(--color-ink);
+    transition:
+      background 0.25s var(--ease-out-expo),
+      color 0.25s var(--ease-out-expo),
+      translate 0.25s var(--ease-out-expo);
+  }
+  .btn:hover {
+    background: var(--color-bone);
+    translate: 0 -2px;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-bone);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-steel) 45%, transparent);
+  }
+  .btn-ghost:hover {
+    background: transparent;
+    color: var(--color-turmeric);
+    box-shadow: inset 0 0 0 1px var(--color-turmeric);
+  }
+
+  .btn-wa {
+    background: #1fa855;
+    color: #fff;
+  }
+  .btn-wa:hover {
+    background: #25d366;
+    color: #0a2b16;
+  }
+
+  .link-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-turmeric);
+    text-decoration: none;
+    padding-block: 0.4rem;
+  }
+  .link-more::after {
+    content: '→';
+    transition: translate 0.25s var(--ease-out-expo);
+  }
+  .link-more:hover::after {
+    translate: 0.35rem 0;
+  }
+
+  /* Veg / non-veg square — the marker every Indian menu is required to carry */
+  .mark {
+    width: 0.8em;
+    height: 0.8em;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid;
+    border-radius: 2px;
+  }
+  .mark::before {
+    content: '';
+    width: 48%;
+    height: 48%;
+    border-radius: 99px;
+    background: currentColor;
+  }
+
+  /* --- The docket: a real paper ticket, torn at both ends ---------------- */
+  .ticket {
+    --notch: 8px;
+    background: var(--color-paper);
+    color: var(--color-paper-ink);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    padding: calc(var(--notch) + 1.2rem) 1.25rem calc(var(--notch) + 1.4rem);
+    filter: drop-shadow(0 16px 32px rgb(0 0 0 / 0.45));
+    -webkit-mask:
+      radial-gradient(var(--notch) at 50% 0, #0000 98%, #000) repeat-x 50% 0 /
+        calc(var(--notch) * 2) var(--notch),
+      radial-gradient(var(--notch) at 50% 100%, #0000 98%, #000) repeat-x 50% 100% /
+        calc(var(--notch) * 2) var(--notch),
+      linear-gradient(#000 0 0) no-repeat 50% 50% / 100% calc(100% - var(--notch) * 2);
+    mask:
+      radial-gradient(var(--notch) at 50% 0, #0000 98%, #000) repeat-x 50% 0 /
+        calc(var(--notch) * 2) var(--notch),
+      radial-gradient(var(--notch) at 50% 100%, #0000 98%, #000) repeat-x 50% 100% /
+        calc(var(--notch) * 2) var(--notch),
+      linear-gradient(#000 0 0) no-repeat 50% 50% / 100% calc(100% - var(--notch) * 2);
+  }
+  .ticket-rule {
+    border-bottom: 1px dashed color-mix(in srgb, var(--color-paper-ink) 35%, transparent);
+  }
+
+  /* Scroll reveal — GSAP adds .is-in, CSS does the work */
+  .reveal {
+    opacity: 0;
+    translate: 0 1.75rem;
+    transition:
+      opacity 0.8s var(--ease-out-expo),
+      translate 0.8s var(--ease-out-expo);
+  }
+  .reveal.is-in {
+    opacity: 1;
+    translate: 0;
+  }
+}
+
+/* --- Motion preferences --------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    translate: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* --- Print ---------------------------------------------------------------- */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  body::after,
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+}

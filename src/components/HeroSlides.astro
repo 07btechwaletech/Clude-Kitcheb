@@ -1,0 +1,151 @@
+---
+import { Image } from 'astro:assets';
+import slide1 from '../assets/img/hero-1.webp';
+import slide2 from '../assets/img/hero-2.webp';
+import slide3 from '../assets/img/hero-3.webp';
+import slide4 from '../assets/img/hero-4.webp';
+
+/** Four frames from one service, cycling every three seconds. */
+const SLIDES = [
+  { img: slide1, alt: 'Chicken tikka skewers charring over the coals' },
+  { img: slide2, alt: 'Butter chicken being finished with cream straight off the stove' },
+  { img: slide3, alt: 'Hyderabadi dum biryani plated with raita and salan' },
+  { img: slide4, alt: 'Paneer tikka arriving on a hot cast-iron sizzler' },
+];
+---
+
+<div class="hero__slides" data-slides>
+  {
+    SLIDES.map((s, i) => (
+      <Image
+        src={s.img}
+        alt={s.alt}
+        widths={[600, 900, 1200]}
+        sizes="(min-width: 1024px) 50vw, 92vw"
+        loading={i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={i === 0 ? 'high' : undefined}
+        class="hero__slide"
+        data-on={i === 0 ? '' : undefined}
+      />
+    ))
+  }
+
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent"></div>
+
+  <div
+    class="absolute right-4 bottom-5 z-[3] flex gap-2 sm:right-6 sm:bottom-6"
+    role="group"
+    aria-label="Choose a photograph"
+  >
+    {
+      SLIDES.map((s, i) => (
+        <button
+          type="button"
+          data-dot={i}
+          aria-label={s.alt}
+          aria-current={i === 0 ? 'true' : 'false'}
+          class="hero__dot"
+        />
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .hero__slides {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--color-ink-raised);
+    aspect-ratio: 4 / 5;
+  }
+
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    scale: 1.04;
+    transition:
+      opacity 1s var(--ease-out-expo),
+      scale 6s linear;
+  }
+  .hero__slide[data-on] {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .hero__dot {
+    width: 1.75rem;
+    height: 2px;
+    border: 0;
+    padding: 0;
+    background: color-mix(in srgb, var(--color-bone) 35%, transparent);
+    transition: background 0.4s var(--ease-out-expo);
+  }
+  .hero__dot[aria-current='true'] {
+    background: var(--color-turmeric);
+  }
+  .hero__dot:hover {
+    background: var(--color-bone);
+  }
+
+  @media (min-width: 1024px) {
+    .hero__slides {
+      aspect-ratio: auto;
+      height: 100%;
+      border-radius: 4px 0 0 4px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__slide {
+      transition: opacity 0.2s linear;
+      scale: 1;
+    }
+  }
+</style>
+
+<script>
+  const stage = document.querySelector<HTMLElement>('[data-slides]');
+  if (stage) {
+    const slides = [...stage.querySelectorAll<HTMLElement>('.hero__slide')];
+    const dots = [...stage.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let at = 0;
+    let timer: ReturnType<typeof setInterval> | undefined;
+
+    const show = (next: number) => {
+      at = (next + slides.length) % slides.length;
+      slides.forEach((s, i) => s.toggleAttribute('data-on', i === at));
+      dots.forEach((d, i) => d.setAttribute('aria-current', String(i === at)));
+    };
+
+    const start = () => {
+      if (calm.matches || timer) return;
+      timer = setInterval(() => show(at + 1), 3000);
+    };
+    const stop = () => {
+      clearInterval(timer);
+      timer = undefined;
+    };
+
+    dots.forEach((d, i) =>
+      d.addEventListener('click', () => {
+        show(i);
+        stop();
+        start();
+      }),
+    );
+
+    // Don't animate off-screen or in a background tab.
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? start() : stop())), {
+      threshold: 0.15,
+    }).observe(stage);
+
+    calm.addEventListener('change', () => (calm.matches ? stop() : start()));
+  }
+</script>

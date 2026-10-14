@@ -1,0 +1,327 @@
+---
+import { Image } from 'astro:assets';
+import HeroSlides from '../components/HeroSlides.astro';
+import Base from '../layouts/Base.astro';
+import DishGrid from '../components/DishGrid';
+import WhatsAppIcon from '../components/WhatsAppIcon';
+import { SIGNATURES, money } from '../lib/menu';
+import { dishPic, pic, GALLERY } from '../lib/images';
+import { SITE, telHref } from '../lib/site';
+import { hello } from '../lib/docket';
+
+import storyLadle from '../assets/img/story-ladle.webp';
+import storyPass from '../assets/img/story-pass.webp';
+
+const signatures = SIGNATURES.map((d) => ({ ...d, pic: dishPic(d.slug) }));
+const teaser = GALLERY.slice(0, 6).map((g) => ({ ...pic(g.file), caption: g.caption }));
+
+const steps = [
+  {
+    t: '00:00',
+    h: 'You send a ticket',
+    p: 'On WhatsApp or over the phone. No app to install, no account to make, no password to forget.',
+  },
+  {
+    t: '00:04',
+    h: 'It hits the pass',
+    p: 'Your dishes start in the order they will finish, so the naan is not sitting cold while the curry catches up.',
+  },
+  {
+    t: '00:28',
+    h: 'Sealed and sent',
+    p: 'Tamper-sealed boxes, one insulated bag, one rider, one stop. Pay cash or UPI at your door.',
+  },
+];
+
+const voices = [
+  {
+    quote: 'The dal actually tastes like it sat on a flame all day. It arrived hot enough to steam up the lid.',
+    who: 'Meera R. · Golf Course Road',
+  },
+  {
+    quote: 'I send the same WhatsApp ticket every Friday and it just works. No app, no twenty-rupee surge.',
+    who: 'Arjun K. · DLF Phase 3',
+  },
+  {
+    quote: 'Ordered for nine people at short notice. Everything landed at once and nothing leaked.',
+    who: 'Divya S. · Sushant Lok',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.name,
+    url: SITE.url,
+    inLanguage: 'en-IN',
+  },
+];
+---
+
+<Base
+  title={`${SITE.name} — Cloud Kitchen in Gurgaon`}
+  description={SITE.description}
+  schema={schema}
+>
+  <!-- Hero ------------------------------------------------------------- -->
+  <section class="hero overflow-hidden">
+    <div class="hero__copy">
+      <p class="eyebrow mb-7">Kitchen No. 01 — Sector 29, Gurgaon</p>
+      <h1 class="mb-7 text-hero">
+        All kitchen,<br /><span class="lg:whitespace-nowrap"
+          >no <span class="wonk">dining room</span>.</span
+        >
+      </h1>
+        <p class="lede mb-9 max-w-[34rem]">
+          We cook North Indian food to order in one small kitchen, seal it hot, and send it straight
+          to your door. Nothing sits under a heat lamp waiting for a table that isn't there.
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+          <a class="btn" href="/menu">See the menu</a>
+          <a class="btn btn-wa" href={hello} target="_blank" rel="noopener noreferrer">
+            <WhatsAppIcon className="h-[1.1em] w-[1.1em]" />
+            Order on WhatsApp
+          </a>
+        </div>
+
+      <dl
+        class="mt-11 flex max-w-[34rem] flex-wrap gap-x-8 gap-y-2 border-t border-hair pt-6 font-mono text-[0.72rem] tracking-[0.12em] text-steel uppercase"
+      >
+          <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 flex-none rounded-full bg-veg"></span>
+            <dt class="sr-only">Hours</dt>
+            <dd>Open till {SITE.hours.close}</dd>
+          </div>
+          <div>
+            <dt class="sr-only">Average delivery time</dt>
+            <dd><b class="font-medium text-bone">{SITE.deliveryMinutes} min</b> average</dd>
+          </div>
+          <div>
+            <dt class="sr-only">Minimum order</dt>
+            <dd><b class="font-medium text-bone">{money(SITE.minOrder)}</b> minimum</dd>
+          </div>
+      </dl>
+    </div>
+
+    <div class="hero__media relative">
+      <HeroSlides />
+
+      <!-- First sight of the docket language, before you meet the docket -->
+      <figure
+        class="ticket absolute bottom-5 -left-3 z-[2] m-0 w-[15rem] text-[0.68rem] sm:bottom-8 sm:w-[15.5rem]"
+      >
+        <b class="mb-2 block text-[0.62rem] tracking-[0.22em] text-chili uppercase">
+          On the pass · 4:12 pm
+        </b>
+        <span class="block">2× Butter Chicken</span>
+        <span class="block">1× Garlic Butter Naan</span>
+        <span class="block">1× Dal Makhani</span>
+        <span class="mt-2 block border-t border-dashed border-paper-ink/35 pt-2 opacity-70">
+          Rider assigned · 11 min out
+        </span>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Signature dishes --------------------------------------------------- -->
+  <section class="py-sec">
+    <div class="wrap">
+      <header class="reveal mb-12 grid items-end gap-6 lg:grid-cols-[1.35fr_1fr] lg:gap-12">
+        <div>
+          <p class="eyebrow mb-5">The short list</p>
+          <h2 class="text-h2">The six we are known for</h2>
+        </div>
+        <p class="max-w-[42ch] text-bone/76">
+          Everything is cooked after you order it. These are the dishes people come back for — and
+          the ones we would send to our own families.
+        </p>
+      </header>
+
+      <div class="reveal">
+        <DishGrid items={signatures} client:visible />
+      </div>
+
+      <p class="mt-12">
+        <a class="link-more" href="/menu">See the full menu</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- From order to door -------------------------------------------------- -->
+  <section class="bg-ink-sunk py-sec">
+    <div class="wrap grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+      <div class="reveal">
+        <Image
+          src={storyLadle}
+          alt="Butter chicken being finished with cream, straight off the stove"
+          widths={[500, 800, 1200]}
+          sizes="(min-width: 1024px) 40vw, 92vw"
+          loading="lazy"
+          class="aspect-4/3 w-full rounded object-cover"
+          data-drift
+        />
+      </div>
+
+      <div class="reveal">
+        <p class="eyebrow mb-5">From your message to your door</p>
+        <h2 class="mb-10 text-h2">Twenty-eight minutes, start to finish</h2>
+
+        <ol class="grid list-none pl-0">
+          {
+            steps.map((s) => (
+              <li class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-7 gap-y-1.5 border-t border-hair py-6 last:border-b">
+                <span class="pt-0.5 font-mono text-base tracking-[0.04em] text-turmeric tabular-nums">
+                  {s.t}
+                </span>
+                <h3 class="text-[1.22rem]">{s.h}</h3>
+                <p class="col-start-2 max-w-[46ch] text-[0.95rem] text-bone/76">{s.p}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why a cloud kitchen ------------------------------------------------- -->
+  <section class="py-sec">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-2 lg:gap-18">
+      <div class="reveal">
+        <p class="eyebrow mb-5">Why we work this way</p>
+        <h2 class="mb-6 text-h2">Built for the box, not the table</h2>
+        <p class="mb-4 text-bone/80">
+          A restaurant spends half its money on a room you sit in for an hour. We spend ours on the
+          part you actually eat: better cuts, whole spices ground every morning, and a kitchen that
+          only has to be good at one thing.
+        </p>
+        <p class="text-bone/80">
+          It also changes how we cook. Every dish here has been tested after a twenty-minute ride —
+          if a gravy splits or a bread goes leathery in the box, it does not go on the menu.
+        </p>
+
+        <dl class="mt-10 grid grid-cols-2 gap-px bg-hair sm:grid-cols-4">
+          <div class="bg-ink p-5">
+            <dt class="mb-2 font-mono text-[0.62rem] tracking-[0.18em] text-steel-dim uppercase">
+              Dal, simmered
+            </dt>
+            <dd class="display text-2xl">8 hrs</dd>
+          </div>
+          <div class="bg-ink p-5">
+            <dt class="mb-2 font-mono text-[0.62rem] tracking-[0.18em] text-steel-dim uppercase">
+              Tandoor
+            </dt>
+            <dd class="display text-2xl">400°C</dd>
+          </div>
+          <div class="bg-ink p-5">
+            <dt class="mb-2 font-mono text-[0.62rem] tracking-[0.18em] text-steel-dim uppercase">
+              Delivery radius
+            </dt>
+            <dd class="display text-2xl">{SITE.deliveryRadiusKm} km</dd>
+          </div>
+          <div class="bg-ink p-5">
+            <dt class="mb-2 font-mono text-[0.62rem] tracking-[0.18em] text-steel-dim uppercase">
+              Stops per rider
+            </dt>
+            <dd class="display text-2xl">One</dd>
+          </div>
+        </dl>
+
+        <p class="mt-8">
+          <a class="link-more" href="/about">Read how the kitchen runs</a>
+        </p>
+      </div>
+
+      <div class="reveal order-first lg:order-last">
+        <Image
+          src={storyPass}
+          alt="Dishes plated and lined up on the pass before they are boxed"
+          widths={[500, 800, 1200]}
+          sizes="(min-width: 1024px) 46vw, 92vw"
+          loading="lazy"
+          class="aspect-4/3 w-full rounded object-cover"
+          data-drift
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery teaser ------------------------------------------------------ -->
+  <section class="bg-ink-raised py-sec">
+    <div class="wrap">
+      <header class="reveal mb-10 flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="eyebrow mb-5">Shot in our kitchen</p>
+          <h2 class="text-h2">No stock photos</h2>
+        </div>
+        <a class="link-more" href="/gallery">Open the gallery</a>
+      </header>
+
+      <ul class="reveal grid list-none grid-cols-2 gap-2 pl-0 sm:grid-cols-3 lg:grid-cols-6 lg:gap-3">
+        {
+          teaser.map((g) => (
+            <li>
+              <a href="/gallery" class="block overflow-hidden rounded bg-ink">
+                <img
+                  src={g.src}
+                  width={g.width}
+                  height={g.height}
+                  alt={g.caption}
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(min-width: 1024px) 16vw, 45vw"
+                  class="aspect-square w-full object-cover transition-[scale] duration-700 hover:scale-105"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Voices -------------------------------------------------------------- -->
+  <section class="py-sec">
+    <div class="wrap">
+      <header class="reveal mb-10">
+        <p class="eyebrow mb-5">From the people who order twice</p>
+        <h2 class="max-w-[18ch] text-h2">What lands at the door</h2>
+      </header>
+
+      <ul class="reveal grid list-none grid-cols-1 gap-px bg-hair pl-0 md:grid-cols-3">
+        {
+          voices.map((v) => (
+            <li class="flex flex-col gap-5 bg-ink p-7">
+              <p class="font-mono text-[0.8rem] tracking-[0.25em] text-turmeric">★★★★★</p>
+              <blockquote class="display text-[1.22rem] leading-snug">{v.quote}</blockquote>
+              <figcaption class="mt-auto font-mono text-[0.64rem] tracking-[0.16em] text-steel-dim uppercase">
+                {v.who}
+              </figcaption>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Order band ---------------------------------------------------------- -->
+  <section class="bg-ink-raised py-sec">
+    <div class="wrap grid items-center gap-8 lg:grid-cols-[1fr_auto] lg:gap-12">
+      <div class="reveal">
+        <h2 class="max-w-[18ch] text-h2">Hungry now? The kitchen is already on.</h2>
+        <p class="mt-4 max-w-[46ch] text-bone/80">
+          Send us a ticket on WhatsApp or just call. We reply with the total and a delivery time
+          before anything goes on the fire.
+        </p>
+      </div>
+      <div class="reveal flex flex-wrap gap-3">
+        <a class="btn btn-wa" href={hello} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon className="h-[1.1em] w-[1.1em]" />
+          Order on WhatsApp
+        </a>
+        <a class="btn btn-ghost" href={telHref}>Call {SITE.phone}</a>
+      </div>
+    </div>
+  </section>
+</Base>

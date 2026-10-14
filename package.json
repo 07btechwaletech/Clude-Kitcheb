@@ -1,0 +1,33 @@
+{
+  "name": "tiffin-and-tandoor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static website for a cloud kitchen. Astro + TypeScript + Tailwind, React islands, GSAP/Motion/Lenis. Builds to plain HTML for Cloudflare Pages or Vercel.",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.3",
+    "@astrojs/sitemap": "^3.6.0",
+    "@nanostores/react": "^1.0.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^5.18.2",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.26",
+    "lucide-react": "^1.56.0",
+    "motion": "^12.43.0",
+    "nanostores": "^1.5.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.6",
+    "typescript": "^5.9.4"
+  }
+}

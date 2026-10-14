@@ -1,0 +1,230 @@
+---
+import Base from '../layouts/Base.astro';
+import OrderBuilder from '../components/OrderBuilder';
+import WhatsAppIcon from '../components/WhatsAppIcon';
+import { DISHES, money } from '../lib/menu';
+import { SITE, telHref, fullAddress } from '../lib/site';
+import { hello } from '../lib/docket';
+
+const mapSrc = `https://www.google.com/maps?q=${SITE.geo.lat},${SITE.geo.lng}&hl=en&z=15&output=embed`;
+
+const faqs = [
+  {
+    q: 'How do I place an order?',
+    a: `Build a ticket on this page or on the menu, then send it to us on WhatsApp. You can also just call ${SITE.phone} and read it out. There is no app to install and no account to create.`,
+  },
+  {
+    q: 'How do I pay?',
+    a: 'Cash or UPI to the rider when the food reaches you. We do not take payment online, so nothing is charged before you have the food in your hands.',
+  },
+  {
+    q: 'How long does delivery take?',
+    a: `About ${SITE.deliveryMinutes} minutes from the moment we confirm your ticket. Biryani and slow gravies can take a little longer at peak hours — we will tell you the real time when we confirm, not an optimistic one.`,
+  },
+  {
+    q: 'Where do you deliver?',
+    a: `Within about ${SITE.deliveryRadiusKm} km of Sector 29, which covers ${SITE.areas.slice(0, -1).join(", ")} and ${SITE.areas.at(-1)}. If you are just outside that, ask anyway — we can usually still send it.`,
+  },
+  {
+    q: 'Is there a minimum order?',
+    a: `Yes, ${money(SITE.minOrder)}. There is no separate delivery fee or packaging charge on top of the menu price.`,
+  },
+  {
+    q: 'Can you cook for a party or an office lunch?',
+    a: 'Yes. Give us a day of notice for anything over fifteen people and we will send a quote with per-head quantities. Pure-veg orders are cooked on the veg side of the kitchen only.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: `Contact ${SITE.name}`,
+    url: `${SITE.url}/contact`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Contact', item: `${SITE.url}/contact` },
+    ],
+  },
+];
+---
+
+<Base
+  title="Contact & order"
+  description={`Order from ${SITE.name} on WhatsApp or by phone. Kitchen address, hours, delivery area and answers to the questions we are asked most.`}
+  schema={schema}
+>
+  <section class="border-b border-hair pt-[clamp(3rem,7vw,5.5rem)] pb-[clamp(2.5rem,5vw,4rem)]">
+    <div class="wrap">
+      <nav
+        aria-label="Breadcrumb"
+        class="mb-6 font-mono text-[0.64rem] tracking-[0.16em] text-steel-dim uppercase"
+      >
+        <a href="/" class="no-underline hover:text-turmeric">Home</a> / Contact
+      </nav>
+      <h1 class="text-h2">Order, or just ask</h1>
+      <p class="lede mt-5">
+        One number does everything — ordering, changes, party quotes and complaints. A person reads
+        it, usually within a minute or two.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a class="btn btn-wa" href={hello} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon className="h-[1.1em] w-[1.1em]" />
+          WhatsApp {SITE.phone}
+        </a>
+        <a class="btn btn-ghost" href={telHref}>Call the kitchen</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Details -------------------------------------------------------------- -->
+  <section class="py-sec">
+    <div class="wrap">
+      <dl class="reveal grid gap-px bg-hair sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid content-start gap-2 bg-ink p-6">
+          <dt class="font-mono text-[0.62rem] tracking-[0.18em] text-turmeric uppercase">Phone</dt>
+          <dd class="text-[1.02rem]">
+            <a href={telHref} class="no-underline hover:text-turmeric">{SITE.phone}</a>
+          </dd>
+        </div>
+        <div class="grid content-start gap-2 bg-ink p-6">
+          <dt class="font-mono text-[0.62rem] tracking-[0.18em] text-turmeric uppercase">
+            WhatsApp
+          </dt>
+          <dd class="text-[1.02rem]">
+            <a href={hello} target="_blank" rel="noopener noreferrer" class="no-underline hover:text-turmeric">
+              Message the kitchen
+            </a>
+          </dd>
+        </div>
+        <div class="grid content-start gap-2 bg-ink p-6">
+          <dt class="font-mono text-[0.62rem] tracking-[0.18em] text-turmeric uppercase">Hours</dt>
+          <dd class="text-[1.02rem] leading-relaxed">
+            {SITE.hours.days}<br />{SITE.hours.open} – {SITE.hours.close}
+          </dd>
+        </div>
+        <div class="grid content-start gap-2 bg-ink p-6">
+          <dt class="font-mono text-[0.62rem] tracking-[0.18em] text-turmeric uppercase">
+            Kitchen
+          </dt>
+          <dd class="text-[1.02rem] leading-relaxed">{fullAddress}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Where we deliver ------------------------------------------------------ -->
+  <section class="pb-sec">
+    <div class="wrap">
+      <header class="reveal mb-8">
+        <p class="eyebrow mb-5">Where we reach</p>
+        <h2 class="max-w-[24ch] text-h3">
+          Riders leave Sector 29 and cover most of Gurgaon in under half an hour
+        </h2>
+      </header>
+      <ul class="reveal flex list-none flex-wrap gap-2 pl-0">
+        {
+          SITE.areas.map((a) => (
+            <li class="rounded-full px-4 py-2 font-mono text-[0.68rem] tracking-[0.13em] text-bone/80 uppercase shadow-[inset_0_0_0_1px_var(--color-hair)]">
+              {a}
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-5 max-w-[52ch] text-sm text-bone/72">
+        Somewhere else in Gurgaon? Send us the pin anyway — if a rider can get there hot, we will
+        say yes.
+      </p>
+    </div>
+  </section>
+
+  <!-- Order builder -------------------------------------------------------- -->
+  <section class="bg-ink-sunk py-sec">
+    <div class="wrap">
+      <header class="reveal mb-12 grid items-end gap-6 lg:grid-cols-[1.35fr_1fr] lg:gap-12">
+        <div>
+          <p class="eyebrow mb-5">Build your ticket</p>
+          <h2 class="text-h2">Pick the dish, set the quantity</h2>
+        </div>
+        <p class="max-w-[42ch] text-bone/76">
+          The ticket is built here in your browser and sent as a WhatsApp message. Nothing is
+          charged and nothing is ordered until we reply and you say yes.
+        </p>
+      </header>
+
+      <div class="reveal">
+        <OrderBuilder dishes={DISHES} client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- Map ------------------------------------------------------------------ -->
+  <section class="py-sec">
+    <div class="wrap">
+      <header class="reveal mb-10">
+        <p class="eyebrow mb-5">Where we cook</p>
+        <h2 class="max-w-[22ch] text-h2">
+          There is no dining room here — but this is where your food is made
+        </h2>
+        <p class="mt-4 max-w-[52ch] text-bone/76">
+          We deliver roughly {SITE.deliveryRadiusKm} km in every direction from this point.
+        </p>
+      </header>
+
+      <div class="reveal overflow-hidden rounded border border-hair bg-ink-raised">
+        <iframe
+          src={mapSrc}
+          title={`Map showing ${SITE.name} in ${SITE.address.city}`}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          class="block h-[clamp(300px,42vw,440px)] w-full border-0 grayscale invert-[0.92] hue-rotate-180 contrast-90"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ ------------------------------------------------------------------ -->
+  <section class="bg-ink-raised py-sec">
+    <div class="wrap grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <header class="reveal">
+        <p class="eyebrow mb-5">Asked most often</p>
+        <h2 class="text-h2">Questions</h2>
+      </header>
+
+      <div class="reveal">
+        {
+          faqs.map((f) => (
+            <details class="border-t border-hair last:border-b">
+              <summary class="display flex cursor-pointer items-center justify-between gap-6 py-5 text-[1.12rem]">
+                {f.q}
+                <span class="flex-none font-mono text-xl text-turmeric transition-transform duration-300">
+                  +
+                </span>
+              </summary>
+              <p class="max-w-[62ch] pb-5 text-bone/80">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  details[open] summary span {
+    transform: rotate(45deg);
+  }
+</style>

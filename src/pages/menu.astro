@@ -1,0 +1,99 @@
+---
+import Base from '../layouts/Base.astro';
+import DishGrid from '../components/DishGrid';
+import WhatsAppIcon from '../components/WhatsAppIcon';
+import { COURSES, DISHES, money } from '../lib/menu';
+import { dishPic } from '../lib/images';
+import { SITE, telHref } from '../lib/site';
+import { hello } from '../lib/docket';
+
+const items = DISHES.map((d) => ({ ...d, pic: dishPic(d.slug) }));
+
+/** Menu schema — lets Google show dishes and prices directly in results. */
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Menu',
+    name: `${SITE.name} menu`,
+    url: `${SITE.url}/menu`,
+    inLanguage: 'en-IN',
+    hasMenuSection: COURSES.map((c) => ({
+      '@type': 'MenuSection',
+      name: c.title,
+      description: c.blurb,
+      hasMenuItem: DISHES.filter((d) => d.course === c.id).map((d) => ({
+        '@type': 'MenuItem',
+        name: d.name,
+        description: d.note,
+        suitableForDiet: d.veg
+          ? 'https://schema.org/VegetarianDiet'
+          : 'https://schema.org/LowLactoseDiet',
+        offers: { '@type': 'Offer', price: d.price, priceCurrency: 'INR' },
+      })),
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Menu', item: `${SITE.url}/menu` },
+    ],
+  },
+];
+
+const cheapest = Math.min(...DISHES.map((d) => d.price));
+---
+
+<Base
+  title="Menu"
+  description={`The full ${SITE.name} menu — tandoor, biryani, curries, street food and breads, from ${money(cheapest)}. Add dishes to a ticket and send it on WhatsApp.`}
+  schema={schema}
+>
+  <section class="border-b border-hair pt-[clamp(3rem,7vw,5.5rem)] pb-[clamp(2.5rem,5vw,4rem)]">
+    <div class="wrap">
+      <nav
+        aria-label="Breadcrumb"
+        class="mb-6 font-mono text-[0.64rem] tracking-[0.16em] text-steel-dim uppercase"
+      >
+        <a href="/" class="no-underline hover:text-turmeric">Home</a> / Menu
+      </nav>
+      <h1 class="text-h2">The menu</h1>
+      <p class="lede mt-5">
+        Fourteen dishes, all cooked after you order. Tap <b class="font-medium text-bone">Add</b> on anything
+        you want — it builds a ticket you can send to the kitchen on WhatsApp in one tap. Prices include
+        taxes and packaging.
+      </p>
+      <p class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[0.68rem] tracking-[0.13em] text-steel uppercase">
+        <span class="flex items-center gap-2"><span class="mark text-veg"></span> Vegetarian</span>
+        <span class="flex items-center gap-2"><span class="mark text-nonveg"></span> Non-vegetarian</span>
+        <span>Minimum order {money(SITE.minOrder)}</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="py-sec">
+    <div class="wrap">
+      <DishGrid items={items} courses={COURSES} client:load />
+    </div>
+  </section>
+
+  <section class="bg-ink-raised py-sec">
+    <div class="wrap grid items-center gap-8 lg:grid-cols-[1fr_auto] lg:gap-12">
+      <div class="reveal">
+        <h2 class="max-w-[20ch] text-h2">Rather just tell us what you want?</h2>
+        <p class="mt-4 max-w-[48ch] text-bone/80">
+          Message the kitchen directly. Party orders, a thali for the office, less chilli for the
+          kids — if it is on the menu we can usually change it.
+        </p>
+      </div>
+      <div class="reveal flex flex-wrap gap-3">
+        <a class="btn btn-wa" href={hello} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon className="h-[1.1em] w-[1.1em]" />
+          Message the kitchen
+        </a>
+        <a class="btn btn-ghost" href={telHref}>Call {SITE.phone}</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,172 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Docket from '../components/Docket';
+import OrderBar from '../components/OrderBar';
+import { SITE } from '../lib/site';
+import ogCover from '../assets/img/og-cover.jpg';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Extra JSON-LD for this page, on top of the site-wide LocalBusiness block. */
+  schema?: Record<string, unknown>[];
+}
+
+const { title, description, schema = [] } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', SITE.url).href;
+const ogImage = new URL(ogCover.src, SITE.url).href;
+const fullTitle = Astro.url.pathname === '/' ? title : `${title} · ${SITE.name}`;
+
+/** Site-wide business identity — the block Google reads for the local pack. */
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  '@id': `${SITE.url}/#kitchen`,
+  name: SITE.name,
+  description: SITE.description,
+  url: SITE.url,
+  telephone: SITE.phone,
+  email: SITE.email,
+  image: ogImage,
+  priceRange: '₹₹',
+  servesCuisine: ['North Indian', 'Indian', 'Indo-Chinese'],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: `${SITE.address.line1}, ${SITE.address.line2}`,
+    addressLocality: SITE.address.city,
+    addressRegion: SITE.address.state,
+    postalCode: SITE.address.zip,
+    addressCountry: SITE.address.country,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: SITE.hours.open,
+    closes: SITE.hours.close,
+  },
+  hasMenu: `${SITE.url}/menu`,
+  acceptsReservations: false,
+  areaServed: {
+    '@type': 'GeoCircle',
+    geoMidpoint: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
+    geoRadius: SITE.deliveryRadiusKm * 1000,
+  },
+  potentialAction: {
+    '@type': 'OrderAction',
+    target: `https://wa.me/${SITE.whatsapp}`,
+    deliveryMethod: 'http://purl.org/goodrelations/v1#DeliveryModeOwnFleet',
+  },
+};
+---
+
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#141010" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400..700&display=swap"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_IN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="geo.region" content="IN-HR" />
+    <meta name="geo.placename" content={SITE.address.city} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(business)} is:inline />
+    {
+      schema.map((block) => (
+        <script type="application/ld+json" set:html={JSON.stringify(block)} is:inline />
+      ))
+    }
+  </head>
+
+  <body>
+    <a
+      href="#main"
+      class="absolute top-0 left-1/2 z-[300] -translate-x-1/2 -translate-y-[150%] rounded-b bg-turmeric px-5 py-3 text-sm font-semibold text-ink transition-transform focus:translate-y-0"
+    >
+      Skip to content
+    </a>
+
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <Docket client:idle />
+    <OrderBar client:idle />
+
+    <script>
+      import Lenis from 'lenis';
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+      const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!calm) {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Smooth scrolling, driven by rAF and kept in sync with ScrollTrigger.
+        const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((t) => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // Reveal: anything marked .reveal rises into place once.
+        document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => {
+          ScrollTrigger.create({
+            trigger: el,
+            start: 'top 88%',
+            once: true,
+            onEnter: () => el.classList.add('is-in'),
+          });
+        });
+
+        // Parallax: images marked data-drift move slower than the page.
+        document.querySelectorAll<HTMLElement>('[data-drift]').forEach((el) => {
+          gsap.fromTo(
+            el,
+            { yPercent: -4 },
+            {
+              yPercent: 4,
+              ease: 'none',
+              scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true },
+            },
+          );
+        });
+      } else {
+        document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+  </body>
+</html>

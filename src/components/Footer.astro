@@ -1,0 +1,101 @@
+---
+import { NAV, SITE, telHref, fullAddress } from '../lib/site';
+import { COURSES } from '../lib/menu';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-hair bg-ink-sunk pt-[clamp(3rem,6vw,5rem)] pb-8">
+  <div class="wrap">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))]">
+      <div class="max-w-[32ch]">
+        <p class="display text-[1.5rem]">{SITE.name}</p>
+        <p class="mt-3 text-[0.94rem] leading-relaxed text-bone/72">
+          {SITE.tagline} We cook North Indian food to order in a single kitchen in Sector 29 and send it
+          straight to your door, right across Gurgaon.
+        </p>
+        <p class="mt-5 font-mono text-[0.62rem] tracking-[0.16em] text-steel-dim uppercase">
+          FSSAI Lic. {SITE.fssai}
+        </p>
+      </div>
+
+      <div>
+        <h2 class="mb-4 font-mono text-[0.64rem] font-medium tracking-[0.2em] text-steel-dim uppercase">
+          Pages
+        </h2>
+        <ul class="grid list-none gap-2.5 pl-0">
+          {
+            NAV.map((i) => (
+              <li>
+                <a href={i.href} class="text-[0.94rem] text-bone/80 no-underline hover:text-turmeric">
+                  {i.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="mb-4 font-mono text-[0.64rem] font-medium tracking-[0.2em] text-steel-dim uppercase">
+          The menu
+        </h2>
+        <ul class="grid list-none gap-2.5 pl-0">
+          {
+            COURSES.map((c) => (
+              <li>
+                <a
+                  href="/menu"
+                  class="text-[0.94rem] text-bone/80 no-underline hover:text-turmeric"
+                >
+                  {c.title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="mb-4 font-mono text-[0.64rem] font-medium tracking-[0.2em] text-steel-dim uppercase">
+          Order & visit
+        </h2>
+        <ul class="grid list-none gap-2.5 pl-0">
+          <li>
+            <a href={telHref} class="text-[0.94rem] text-bone/80 no-underline hover:text-turmeric">
+              {SITE.phone}
+            </a>
+          </li>
+          <li>
+            <a
+              href={`mailto:${SITE.email}`}
+              class="text-[0.94rem] text-bone/80 no-underline hover:text-turmeric"
+            >
+              {SITE.email}
+            </a>
+          </li>
+          <li class="text-[0.94rem] leading-relaxed text-bone/72">{fullAddress}</li>
+          <li class="font-mono text-[0.68rem] tracking-[0.13em] text-steel-dim uppercase">
+            {SITE.hours.days} · {SITE.hours.open}–{SITE.hours.close}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div
+      class="mt-12 flex flex-wrap justify-between gap-x-6 gap-y-2 border-t border-hair pt-6 font-mono text-[0.64rem] tracking-[0.12em] text-steel-dim uppercase"
+    >
+      <span>© {year} {SITE.legalName}</span>
+      <span>Delivering across {SITE.address.city}, within {SITE.deliveryRadiusKm} km of Sector 29</span>
+      <span>
+        Design by{' '}
+        <a
+          href={SITE.designer.url}
+          target="_blank"
+          rel="noopener"
+          class="text-steel no-underline hover:text-turmeric">{SITE.designer.name}</a
+        >
+      </span>
+    </div>
+  </div>
+</footer>
